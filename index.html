@@ -10,42 +10,43 @@
   --serif:"Fraunces",Georgia,serif; --sans:"Work Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--pine);font-family:var(--sans)}
+html,body{margin:0;min-height:100%;background:var(--pine);font-family:var(--sans)}
 .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-.card{max-width:360px;width:100%;text-align:center}
-.logobtn{border:0;background:transparent;padding:0;cursor:pointer;display:block;margin:0 auto 14px;border-radius:50%}
-.logobtn:focus-visible{outline:2.5px solid var(--gold);outline-offset:4px}
-.logobtn img{width:110px;height:110px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);background:#fff;display:block}
-.hint{color:#cdd7cd;font-size:13.5px;text-align:center}
+.card{max-width:420px;width:100%;text-align:center}
 .kicker{font-size:11.5px;letter-spacing:.16em;font-weight:600;color:var(--gold);text-transform:uppercase}
-.title{font-family:var(--serif);font-weight:600;font-size:clamp(1.6rem,7vw,2.2rem);color:#fbf3e4;margin:8px 0 4px;line-height:1.05}
-.sub{font-size:14px;color:#cdd7cd;margin-bottom:22px}
+.title{font-family:var(--serif);font-weight:600;font-size:clamp(1.6rem,7vw,2.2rem);color:#fbf3e4;margin:8px 0 20px;line-height:1.05}
+.grid{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;margin-bottom:8px}
+.tile{border:0;background:transparent;padding:0;cursor:pointer;width:96px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.tile:focus-visible .tileimg{outline:2.5px solid var(--gold);outline-offset:3px}
+.tileimg{width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);background:#fff;display:flex;align-items:center;justify-content:center}
+.tileimg img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.tilelabel{color:#fbf3e4;font-size:12.5px;font-weight:600;line-height:1.3}
+.tile--admin .tileimg{background:#2a2620;border-color:#5c5548}
+.tile--admin svg{width:34px;height:34px}
+.hint{color:#cdd7cd;font-size:13px;text-align:center;margin-top:6px}
+.gate{margin-top:18px}
+.gatecard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:18px}
+.gatename{font-family:var(--serif);font-weight:600;font-size:18px;color:#fbf3e4;margin-bottom:10px}
 .row{display:flex;gap:8px}
 .in{flex:1;min-width:0;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:12px;padding:12px 14px;font-family:var(--sans);font-size:15px}
 .in::placeholder{color:#9fb0a3}
 .in:focus{outline:2px solid var(--gold)}
 .btn{flex:0 0 auto;border:0;background:var(--maple);color:#fff;font-weight:700;font-family:var(--sans);font-size:15px;padding:12px 18px;border-radius:12px;cursor:pointer}
 .btn:disabled{opacity:.5;cursor:default}
+.back{margin-top:12px;background:transparent;border:0;color:#cdd7cd;font-size:12.5px;cursor:pointer;text-decoration:underline}
 .err{color:#f0b8b0;font-size:13px;margin-top:12px;min-height:18px}
 .status{color:#cdd7cd;font-size:13px;margin-top:12px}
+.loading{color:#cdd7cd;font-size:13.5px}
 </style>
 </head>
 <body>
 <div class="wrap"><div class="card" id="card">
-  <button type="button" class="logobtn" id="logoBtn" aria-label="Continuer">
-    <img id="logoImg" src="" alt=""/>
-  </button>
-  <div id="hint" class="hint">Touchez le logo pour continuer</div>
-  <div id="gate" style="display:none">
-    <div class="kicker">CARNET DE ROUTE · PRIVÉ</div>
-    <div class="title">Compagnon Road Trip Canada</div>
-    <div class="sub">Entre le mot de passe partagé par l'organisateur.</div>
-    <div class="row">
-      <input class="in" type="password" id="pw" placeholder="Mot de passe" autocomplete="off"/>
-      <button class="btn" id="go">Entrer</button>
-    </div>
-    <div class="err" id="err"></div>
+  <div class="kicker">Carnet de route</div>
+  <div class="title">Choisis ton voyage</div>
+  <div id="picker">
+    <div class="loading">Chargement…</div>
   </div>
+  <div class="err" id="err"></div>
   <div class="status" id="status" style="display:none"></div>
 </div></div>
 
@@ -58,10 +59,15 @@ html,body{margin:0;height:100%;background:var(--pine);font-family:var(--sans)}
 (function(){
   "use strict";
   var SALT="4604f021254342ca";
-  var PASS_HASH="5fd2f07360cb147cb05e91882ca8294419086fa7652c5f2725b7da75aeeb6ed3";
-  var USER_HASH="813dbd34e3a4437453a8eca44b25580f087ec3faae01650fa87e5d22615aea5a";
+  var LEGACY_ADMIN_HASH="5fd2f07360cb147cb05e91882ca8294419086fa7652c5f2725b7da75aeeb6ed3";
+  var LEGACY_USER_HASH="813dbd34e3a4437453a8eca44b25580f087ec3faae01650fa87e5d22615aea5a";
+  var GOD_HASH="921e5ae3bb2d0b9c3a1616d1ca2c86b336653be5ca0b0550477d1e65f8d5c6da";
+  var DEFAULT_ICON_SVG='<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#1c3a2e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.8-7-11a7 7 0 1 1 14 0c0 6.2-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+  var ADMIN_ICON_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="#e2b45c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/><path d="M9 12l2 2 4-4"/></svg>';
 
   var sb = (window.supabase && window.SUPABASE_URL) ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
+
+  function nsKey(tripId, base){ return tripId ? (tripId + "::" + base) : base; }
 
   async function kvGet(key){
     if(!sb) return null;
@@ -77,38 +83,59 @@ html,body{margin:0;height:100%;background:var(--pine);font-family:var(--sans)}
     return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
   }
 
-  function getStoredRole(){ try{ return localStorage.getItem("rt_role"); }catch(e){ return null; } }
-  function setStoredRole(r){ try{ if(r) localStorage.setItem("rt_role", r); }catch(e){} }
+  async function getAuthHashes(tripId){
+    var v = await kvGet(nsKey(tripId, "auth-hashes"));
+    if(v && v.admin && v.user) return v;
+    if(tripId === "") return {admin: LEGACY_ADMIN_HASH, user: LEGACY_USER_HASH};
+    return null;
+  }
 
   function showStatus(msg){
-    document.getElementById("card").querySelectorAll(".logobtn,.hint,#gate").forEach(function(el){ el.style.display="none"; });
+    document.getElementById("picker").style.display = "none";
+    document.getElementById("err").style.display = "none";
     var st = document.getElementById("status");
     st.style.display = "block";
     st.textContent = msg;
   }
 
-  async function goToRoadbook(){
+  async function redirectToRoadbook(tripId){
     showStatus("Ouverture du carnet de route…");
-    var url = await kvGet("roadbook-url");
+    var url = await kvGet(nsKey(tripId, "roadbook-url"));
     if(url && String(url).trim()){
       window.location.href = String(url).trim();
     } else {
-      showStatus("Le lien du carnet n'est pas encore configuré. Demande à l'organisateur de le renseigner dans Réglages ▸ Voyage.");
+      showStatus("Le lien de ce carnet n'est pas encore configuré. Demande à l'organisateur de le renseigner dans Admin.");
     }
   }
 
-  async function loadLogo(){
-    var v = await kvGet("roadtrip-canada-logo-v1");
-    if(v){ document.getElementById("logoImg").src = v; }
+  async function redirectToAdmin(){
+    showStatus("Ouverture de l'administration…");
+    var url = await kvGet("admin-url");
+    if(url && String(url).trim()){
+      window.location.href = String(url).trim();
+    } else {
+      showStatus("L'adresse du panneau d'administration n'est pas encore configurée.");
+    }
   }
 
-  function reveal(){
-    document.getElementById("hint").style.display = "none";
-    document.getElementById("gate").style.display = "block";
+  function openGate(tile){
+    var picker = document.getElementById("picker");
+    var name = tile.isAdmin ? "Administration" : tile.name;
+    picker.innerHTML =
+      '<div class="gate"><div class="gatecard">' +
+        '<div class="gatename">' + escapeHtml(name) + '</div>' +
+        '<div class="row"><input class="in" type="password" id="pw" placeholder="Mot de passe" autocomplete="off"/>' +
+        '<button class="btn" id="go">Entrer</button></div>' +
+      '</div>' +
+      '<button class="back" id="backBtn">← Retour</button></div>';
+    document.getElementById("err").textContent = "";
     document.getElementById("pw").focus();
+    document.getElementById("backBtn").addEventListener("click", renderPicker);
+    document.getElementById("go").addEventListener("click", function(){ tryUnlock(tile); });
+    document.getElementById("pw").addEventListener("keydown", function(e){ if(e.key==="Enter") tryUnlock(tile); });
   }
 
-  async function tryUnlock(){
+  async function tryUnlock(tile){
     var pw = document.getElementById("pw").value;
     var errEl = document.getElementById("err");
     var goBtn = document.getElementById("go");
@@ -116,11 +143,13 @@ html,body{margin:0;height:100%;background:var(--pine);font-family:var(--sans)}
     goBtn.disabled = true; errEl.textContent = "";
     try{
       var h = await sha256hex(SALT + pw);
-      if(h === PASS_HASH || h === USER_HASH){
-        setStoredRole(h === PASS_HASH ? "admin" : "user");
-        await goToRoadbook();
+      if(tile.isAdmin){
+        if(h === GOD_HASH){ await redirectToAdmin(); }
+        else { errEl.textContent = "Mot de passe incorrect."; }
       } else {
-        errEl.textContent = "Mot de passe incorrect.";
+        var hashes = await getAuthHashes(tile.id);
+        if(hashes && (h === hashes.admin || h === hashes.user)){ await redirectToRoadbook(tile.id); }
+        else { errEl.textContent = "Mot de passe incorrect."; }
       }
     } catch(e){
       errEl.textContent = "Une erreur est survenue.";
@@ -129,14 +158,52 @@ html,body{margin:0;height:100%;background:var(--pine);font-family:var(--sans)}
     }
   }
 
-  document.getElementById("logoBtn").addEventListener("click", reveal);
-  document.getElementById("go").addEventListener("click", tryUnlock);
-  document.getElementById("pw").addEventListener("keydown", function(e){ if(e.key==="Enter") tryUnlock(); });
-
-  loadLogo();
-  if(getStoredRole()){
-    goToRoadbook();
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, function(c){
+      return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];
+    });
   }
+
+  var TILES = [];
+
+  function tileHtml(tile, i){
+    var img = tile.isAdmin
+      ? '<div class="tileimg">' + ADMIN_ICON_SVG + '</div>'
+      : (tile.logo ? '<div class="tileimg"><img src="'+tile.logo+'" alt=""/></div>' : '<div class="tileimg">'+DEFAULT_ICON_SVG+'</div>');
+    return '<button type="button" class="tile'+(tile.isAdmin?' tile--admin':'')+'" data-i="'+i+'" aria-label="'+escapeHtml(tile.isAdmin?"Administration":tile.name)+'">' +
+      img + '<span class="tilelabel">'+escapeHtml(tile.isAdmin?"Admin":tile.name)+'</span></button>';
+  }
+
+  function renderPicker(){
+    var picker = document.getElementById("picker");
+    document.getElementById("err").textContent = "";
+    document.getElementById("status").style.display = "none";
+    picker.style.display = "block";
+    picker.innerHTML = '<div class="grid">' + TILES.map(tileHtml).join("") + '</div><div class="hint">Touche ton voyage pour continuer</div>';
+    Array.prototype.forEach.call(picker.querySelectorAll(".tile"), function(btn){
+      btn.addEventListener("click", function(){ openGate(TILES[parseInt(btn.getAttribute("data-i"),10)]); });
+    });
+  }
+
+  async function init(){
+    var defaultName = await kvGet("roadtrip-canada-tripmeta-v1");
+    var defaultLogo = await kvGet("roadtrip-canada-logo-v1");
+    TILES.push({id:"", name:(defaultName && defaultName.name) ? defaultName.name : "Road Trip Canada", logo: defaultLogo || ""});
+
+    var idx = await kvGet("trips-index");
+    if(idx && idx.length){
+      for(var i=0;i<idx.length;i++){
+        var t = idx[i];
+        var tlogo = await kvGet(nsKey(t.id, "roadtrip-canada-logo-v1"));
+        TILES.push({id:t.id, name:t.name, logo: tlogo || ""});
+      }
+    }
+    TILES.push({isAdmin:true});
+
+    renderPicker();
+  }
+
+  init();
 })();
 </script>
 </body>
