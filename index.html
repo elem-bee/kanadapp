@@ -139,7 +139,8 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
     picker.innerHTML =
       '<div class="gate"><div class="gatecard">' +
         '<div class="gatename">' + escapeHtml(name) + '</div>' +
-        '<div class="row"><input class="in" type="password" id="pw" placeholder="Mot de passe" autocomplete="off"/>' +
+        '<div class="row"><input class="in" type="password" id="pw" placeholder="Mot de passe" autocomplete="off"' +
+          (tile.isAdmin ? '' : ' inputmode="numeric" pattern="[0-9]*"') + '/>' +
         '<button class="btn" id="go">Entrer</button></div>' +
       '</div>' +
       '<button class="back" id="backBtn">← Retour</button></div>';
