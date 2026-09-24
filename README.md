@@ -89,10 +89,8 @@ Remplace les fichiers HTML voulus (mêmes noms) via **Add file ▸ Upload files*
 Les scripts SQL contenant des données réelles **ne doivent pas** être ajoutés à ce
 dépôt public : ils s'exécutent directement dans Supabase, hors du dépôt.
 
-1. **SQL Editor** ▸ exécuter le script de **schéma**
-   [`supabase/2026 09 24 schema.sql`](supabase/2026%2009%2024%20schema.sql) (crée la
-   table `kv` et les règles d'accès). Il ne contient aucune donnée et peut être
-   ré-exécuté sans risque.
+1. **SQL Editor** ▸ exécuter le script de **schéma** (crée la table `kv` et les
+   règles d'accès) — celui-ci reste lui aussi **hors du dépôt**.
 2. **SQL Editor** ▸ exécuter, pour chaque voyage, un script de **données** propre à
    ce voyage (voyageurs, vols, hébergement, etc.) — celui-ci reste **hors du dépôt**.
 
@@ -108,8 +106,6 @@ dépôt public : ils s'exécutent directement dans Supabase, hors du dépôt.
 ├── index.html    ← page d'accueil multi-voyages
 ├── roadbook.html ← application d'un voyage
 ├── admin.html    ← tableau de bord administrateur
-├── supabase/
-│   └── 2026 09 24 schema.sql ← schéma de la base (table kv + règles RLS)
 └── README.md     ← ce fichier
 ```
 
