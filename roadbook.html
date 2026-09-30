@@ -23,13 +23,17 @@ window.storage = {
     try{
       var r = await window.supabase.from("kv").select("value").eq("key", key).maybeSingle();
       if(r.error || !r.data) return null;
-      return {key: key, value: r.data.value, shared: !!shared};
+      var v = r.data.value;
+      if(typeof v !== "string") v = JSON.stringify(v);
+      return {key: key, value: v, shared: !!shared};
     }catch(e){ return null; }
   },
   set: async function(key, value, shared){
     if(!window.supabase) return null;
     try{
-      var r = await window.supabase.from("kv").upsert({key: key, value: value});
+      var v = value;
+      try{ v = JSON.parse(value); }catch(e){}
+      var r = await window.supabase.from("kv").upsert({key: key, value: v});
       if(r.error) return null;
       return {key: key, value: value, shared: !!shared};
     }catch(e){ return null; }
