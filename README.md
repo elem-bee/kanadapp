@@ -16,8 +16,11 @@ l'autre — chaque voyage a ses propres données, entièrement isolées des autr
   des CDN — une connexion Internet est nécessaire) :
   - **`index.html`** — page d'accueil : une tuile par voyage enregistré, protégée par
     mot de passe, plus une tuile Administration.
-  - **`roadbook.html`** — l'application d'un voyage donné (Planning, Map, Resa, Docs,
-    Comptes, Bloc-notes), sélectionné via `?trip=<id>` dans l'URL.
+  - **`roadbook.html`** — l'application d'un voyage donné, sélectionné via `?trip=<id>`
+    dans l'URL. Navigation : onglets Planning, Map, Resa et Comptes (en bas de l'écran
+    sur téléphone, en haut sur grand écran) ; le menu ☰ donne accès à Docs, Bloc-notes
+    et Settings. Chaque écran est une entrée de l'historique du navigateur : le bouton
+    Retour d'Android ramène à l'écran précédent au lieu de quitter l'application.
   - **`admin.html`** — tableau de bord général : création de voyages, mots de passe,
     réglages partagés entre tous les voyages.
 - **Données partagées** : stockées dans un projet **Supabase** (table `kv`), pas dans
@@ -53,18 +56,20 @@ depuis `admin.html`.
 
 - **PLANNING** — itinéraire jour par jour, éditable en ligne (notes enrichies, liens,
   pièces jointes). Chaque entrée peut être associée à un lieu et à une réservation.
-- **MAP** — liste des lieux d'intérêt, groupés par zone, alimentée automatiquement par
-  les lieux du planning et des réservations, complétable manuellement ou par import
-  CSV (export Google Takeout) ; carte Leaflet légère pour les lieux géolocalisés, et
-  liens vers des cartes ou listes Google Maps partagées.
+- **MAP** — registre unique des lieux du voyage, groupés par zone. Une activité peut
+  référencer plusieurs lieux, une réservation un lieu ; le lien Google Maps est
+  optionnel. Tous les lieux sont modifiables (zone comprise), saisissables depuis Map,
+  une activité ou une réservation, ou importables par CSV (export Google Takeout) ;
+  carte Leaflet légère pour les lieux géolocalisés.
 - **RESA** — vols, hébergement, location de véhicule, billetterie ; chaque réservation
   peut être reliée à une entrée de planning et/ou à une dépense, avec des liens
   croisés pour naviguer entre les trois.
-- **DOCS** — accès à un dossier Google Drive partagé, avec arborescence et
-  ré-indexation à la demande.
-- **COMPTES** — dépenses et remboursements entre groupes de voyageurs (définis
-  librement, pas figés), équilibrage en euros, statistiques, export PDF.
-- **Bloc-notes** — liste de tâches partagée, ouverte à tous les voyageurs.
+- **DOCS** (menu ☰) — accès au dossier Google Drive partagé du voyage, dont le lien se
+  renseigne dans Settings.
+- **COMPTES** — dépenses en euros ou en devises (plusieurs taux de repli par voyage),
+  statistiques et export PDF. La gestion par groupe de voyageurs (équilibrage,
+  remboursements, répartition) est optionnelle, réglable dans Settings.
+- **Bloc-notes** (menu ☰) — liste de tâches partagée, ouverte à tous les voyageurs.
 - **Export Tripedia** — un PDF exhaustif du voyage (planning, réservations, lieux,
   comptes), pensé pour nourrir le contexte d'un assistant IA.
 
