@@ -18,8 +18,8 @@ l'autre — chaque voyage a ses propres données, entièrement isolées des autr
     mot de passe, plus une tuile Administration.
   - **`roadbook.html`** — l'application d'un voyage donné, sélectionné via `?trip=<id>`
     dans l'URL. Navigation : onglets Planning, Map, Resa et Comptes (en bas de l'écran
-    sur téléphone, en haut sur grand écran) ; le menu ☰ donne accès à Docs, Bloc-notes
-    et Settings. Chaque écran est une entrée de l'historique du navigateur : le bouton
+    sur téléphone, en haut sur grand écran) ; le menu ☰ donne accès à Docs, Bloc-notes,
+    Settings et à la zone Exports (Planning, Comptes, Tripedia). Chaque écran est une entrée de l'historique du navigateur : le bouton
     Retour d'Android ramène à l'écran précédent au lieu de quitter l'application.
   - **`admin.html`** — tableau de bord général : création de voyages, mots de passe,
     réglages partagés entre tous les voyages.
@@ -66,12 +66,27 @@ depuis `admin.html`.
   croisés pour naviguer entre les trois.
 - **DOCS** (menu ☰) — accès au dossier Google Drive partagé du voyage, dont le lien se
   renseigne dans Settings.
-- **COMPTES** — dépenses en euros ou en devises (plusieurs taux de repli par voyage),
-  statistiques et export PDF. La gestion par groupe de voyageurs (équilibrage,
-  remboursements, répartition) est optionnelle, réglable dans Settings.
+- **COMPTES** — dépenses en euros ou en devises (plusieurs taux de repli par voyage) et
+  statistiques ; trois actions en badges : nouvelle dépense, nouveau remboursement,
+  statistiques.
+  - **Affectation par voyageur, toujours.** Chaque dépense est affectée aux voyageurs
+    qui en ont profité (« Concerne ») : à parts égales (4 convives sur 8 = 25 % chacun,
+    le payeur pouvant en faire partie ou non) ou en pourcentages libres (le total doit
+    faire 100 %). Les autres voyageurs ne sont pas concernés.
+  - **Les groupes ne sont qu'une vue.** Le réglage de Settings choisit comment le solde
+    se présente et se règle : par **groupe** (familles) — le solde d'un groupe est la
+    somme de ceux de ses membres, le remboursement va de famille à famille — ou par
+    **voyageur** : solde de chacun, virements proposés pour tout solder, remboursement
+    de voyageur à voyageur. Un voyageur seul n'a qu'un total.
+  - **Compatibilité.** Une ancienne dépense répartie entre deux groupes (50/50, 100 %,
+    parts) garde exactement son résultat : elle n'est réécrite en affectation par
+    voyageur que si on modifie sa sélection. Les remboursements entre groupes et entre
+    voyageurs sont tous pris en compte, quelle que soit la vue.
 - **Bloc-notes** (menu ☰) — liste de tâches partagée, ouverte à tous les voyageurs.
-- **Export Tripedia** — un PDF exhaustif du voyage (planning, réservations, lieux,
-  comptes), pensé pour nourrir le contexte d'un assistant IA.
+- **Exports** (menu ☰) — trois PDF regroupés au même endroit : le **Planning** (à
+  imprimer), les **Comptes** (admin) et **Tripedia**, un PDF exhaustif du voyage
+  (planning, réservations, lieux, comptes) pensé pour nourrir le contexte d'un
+  assistant IA.
 
 ---
 
