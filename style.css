@@ -310,6 +310,8 @@ select.rt-field{appearance:none}
 .rt-mode.is-on{border-color:var(--pine);background:var(--pine-soft)}
 .rt-mode:focus-visible{outline:2.5px solid var(--pine);outline-offset:2px}
 .rt-warn{color:var(--maple-deep)}
+.rt-iconbtn--del:hover{background:var(--maple-soft)}
+.rt-btn-del:disabled{opacity:.45;cursor:default}
 .rt-conc__act{display:flex;gap:16px;margin-top:2px}
 .rt-conc__act .rt-linkbtn{background:none;border:0;padding:4px 0;margin-top:0;cursor:pointer;font-family:var(--sans)}
 .rt-exp{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
