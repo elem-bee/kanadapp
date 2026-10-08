@@ -244,6 +244,12 @@ select.rt-field{appearance:none}
 .rt-poi .rt-share{margin:-6px 0}
 .rt-card__h--row .rt-share,.rt-fgroup__h .rt-share{margin:-6px 0}
 [data-theme="neon"] .rt-share svg{filter:drop-shadow(0 0 3px currentColor)}
+/* Lever et coucher du soleil sur les cartes des jours */
+.rt-sun{display:flex;align-items:center;flex-wrap:wrap;gap:4px 14px;margin-top:5px;font-size:12px;font-weight:700;color:var(--ink-soft)}
+.rt-sun>span{display:inline-flex;align-items:center;gap:5px}
+.rt-sun svg{flex:0 0 auto;color:var(--amber)}
+.rt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[data-theme="neon"] .rt-sun svg{filter:drop-shadow(0 0 3px currentColor)}
 /* Vue Comptes : soldes, dépenses, statistiques, devises */
 .rt-bal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-bottom:14px}
 .rt-bal__main{font-size:15px;color:var(--ink);text-align:center;margin-bottom:12px}.rt-bal__main b{color:var(--pine)}
