@@ -250,6 +250,24 @@ select.rt-field{appearance:none}
 .rt-sun svg{flex:0 0 auto;color:var(--amber)}
 .rt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 [data-theme="neon"] .rt-sun svg{filter:drop-shadow(0 0 3px currentColor)}
+/* Entrées dérivées d'une réservation (hébergement, location…) sur les journées qu'elle couvre */
+.rt-item__sub{margin-top:1px;font-size:11px;font-weight:600;color:var(--ink-soft)}
+.rt-item--resa .rt-item__t{font-style:italic}
+/* Réglages : migration vers les lieux et itinéraires */
+.rt-geo__mode{font-size:11.5px;padding:4px 10px}
+.rt-geo__grp{margin:12px 0 0;padding-top:8px;border-top:1px solid var(--line,#d6d3c8)}
+.rt-geo__grph{font-weight:700;font-size:12.5px;margin-bottom:4px}
+.rt-geo__row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:13px;cursor:pointer}
+.rt-geo__row input{margin-top:3px;flex:0 0 auto}
+.rt-geo__list{margin:4px 0 0;padding-left:18px;font-size:12.5px}
+.rt-geo__act{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.rt-geo__confirm p{flex:1 1 100%;margin:0}
+.rt-geo__result{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:13px;border:1px solid var(--line,#d6d3c8)}
+.rt-geo__result.is-ok{background:var(--pine-soft)}
+.rt-geo__result.is-ko{background:var(--bg-warn,#fbe9e4)}
+.rt-geo__test{margin-top:14px}
+.rt-geo__test summary{cursor:pointer;font-weight:600;font-size:13px}
+.rt-poi__kind{display:inline-flex;align-items:center;margin-right:4px;color:var(--ink-soft)}
 /* Vue Comptes : soldes, dépenses, statistiques, devises */
 .rt-bal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-bottom:14px}
 .rt-bal__main{font-size:15px;color:var(--ink);text-align:center;margin-bottom:12px}.rt-bal__main b{color:var(--pine)}
@@ -370,7 +388,7 @@ select.rt-field{appearance:none}
 .rt-tl-line__active{position:absolute;top:50%;height:3px;background:var(--brand);transform:translateY(-50%);border-radius:2px}
 .rt-tl-dots{position:relative;display:flex;justify-content:space-between;align-items:center;height:100%}
 .rt-tl-dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--paper);padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:10.5px;font-weight:700;line-height:1}
-.rt-tl-dot--off{background:#c9c5ba;color:#726e63;cursor:default}
+.rt-tl-dot--off{background:#c9c5ba;color:#4f4b44;cursor:default}
 .rt-tl-dot--past{background:var(--brand);color:var(--brand-ink)}
 .rt-tl-dot--future{background:#8fd19e;color:#1c3a2e}
 .rt-tl-dot:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
