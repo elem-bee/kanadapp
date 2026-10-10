@@ -268,6 +268,32 @@ select.rt-field{appearance:none}
 .rt-geo__test{margin-top:14px}
 .rt-geo__test summary{cursor:pointer;font-weight:600;font-size:13px}
 .rt-poi__kind{display:inline-flex;align-items:center;margin-right:4px;color:var(--ink-soft)}
+/* Champ de recherche de lieu */
+.rt-geosearch{position:relative;margin-bottom:6px}
+.rt-geosearch__status{min-height:16px;margin:3px 2px 0;font-size:11.5px;color:var(--ink-soft)}
+.rt-geosearch__list{list-style:none;margin:4px 0 0;padding:0;max-height:42vh;overflow-y:auto;border:1px solid var(--line,#d6d3c8);border-radius:10px;background:var(--card,#fff)}
+.rt-geosearch__list ul{list-style:none;margin:0;padding:0}
+.rt-geosearch__grph{padding:6px 12px 2px;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft)}
+.rt-geosearch__opt{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 12px;cursor:pointer}
+.rt-geosearch__opt.is-active,.rt-geosearch__opt:hover{background:var(--pine-soft)}
+.rt-geosearch__opt.is-off{opacity:.65;cursor:not-allowed}
+.rt-geosearch__ico{flex:0 0 auto;display:inline-flex;color:var(--ink-soft)}
+.rt-geosearch__txt{display:flex;flex-direction:column;min-width:0}
+.rt-geosearch__t{font-size:13.5px;font-weight:700;overflow-wrap:anywhere}
+.rt-geosearch__s{font-size:11.5px;color:var(--ink-soft);overflow-wrap:anywhere}
+.rt-geosearch__note{margin:2px 0 8px}
+.rt-placechip__loc{color:var(--accent-text,#8a4b00);font-weight:700}
+.rt-seg{display:flex;gap:6px;margin:0 0 10px}
+.rt-seg button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;border:1px solid var(--line,#d6d3c8);border-radius:10px;background:var(--card,#fff);color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.rt-seg button.is-on{background:var(--pine-soft);border-color:var(--pine,#1c3a2e)}
+.rt-itied__list{list-style:none;margin:0 0 8px;padding:0}
+.rt-itied__row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line,#d6d3c8)}
+.rt-itied__n{flex:0 0 22px;height:22px;border-radius:50%;background:var(--pine,#1c3a2e);color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.rt-itied__txt{flex:1;min-width:0;display:flex;flex-direction:column;font-size:13px}
+.rt-itied__btns{display:flex;gap:2px;flex:0 0 auto}
+.rt-itied__link{margin-top:8px}
+.rt-itied__chk{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;margin:6px 0}
+.rt-itnum{background:var(--pine,#1c3a2e);color:#fff;border:2px solid #fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
 /* Vue Comptes : soldes, dépenses, statistiques, devises */
 .rt-bal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-bottom:14px}
 .rt-bal__main{font-size:15px;color:var(--ink);text-align:center;margin-bottom:12px}.rt-bal__main b{color:var(--pine)}
