@@ -407,6 +407,16 @@ select.rt-field{appearance:none}
 .rt-pl-edit__act,.rt-pl-del__act{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .rt-pl-del{font-size:13.5px;color:var(--ink)}
 .rt-pl-btns .rt-iconbtn{min-width:38px;min-height:38px;display:inline-flex;align-items:center;justify-content:center}
+/* Barre d'état de la connexion (hors ligne, connexion rétablie, nouvelle version) */
+.rt-netbars{position:sticky;top:0;z-index:90}
+.rt-netbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 8px) 14px 8px;font-size:13px;line-height:1.35;color:var(--ink);border-bottom:1px solid var(--line)}
+.rt-netbar+.rt-netbar{padding-top:8px}
+.rt-netbar--off{background:var(--amber-soft)}
+.rt-netbar--ok{background:var(--pine-soft)}
+.rt-netbar--upd{background:var(--card)}
+.rt-netbar__t{flex:1 1 220px;min-width:0}
+.rt-netbar__warn{color:var(--maple-deep)}
+.rt-netbar__btn{flex:0 0 auto;min-height:36px}
 /* Grilles responsives, frise de la semaine, transitions */
 
 @media(min-width:820px){.rt-shell{max-width:1560px}.rt-body{padding:24px 34px 50px}}

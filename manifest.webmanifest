@@ -1,0 +1,35 @@
+{
+  "id": "./",
+  "name": "Otrip — Compagnon de voyage",
+  "short_name": "Otrip",
+  "description": "Carnet de route : planning, réservations, carte, comptes et bloc-notes d'un voyage.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f2",
+  "theme_color": "#1c3a2e",
+  "categories": [
+    "travel"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
