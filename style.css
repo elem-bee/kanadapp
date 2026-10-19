@@ -388,6 +388,25 @@ select.rt-field{appearance:none}
 .rt-hist{margin-top:6px}
 .rt-hist__max{font-size:11px;color:var(--ink-soft);text-align:right;margin-top:2px}
 .rt-rate{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;color:var(--ink)}
+/* Bloc-notes : playlists musicales */
+.rt-pl{margin-top:26px;padding-top:6px;border-top:1px solid var(--line)}
+.rt-pl__hd{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--ink-soft);margin:14px 0 10px}
+.rt-pl-add{display:flex;flex-direction:column;gap:4px;margin:0 0 16px}
+.rt-pl-add__btn{margin-top:8px;align-self:flex-start}
+.rt-pl-msg{min-height:18px;font-size:12.5px;color:var(--ink-soft);margin-top:6px}
+.rt-pl-msg.is-err{color:var(--maple-deep);font-weight:600}
+.rt-pl-list{list-style:none;margin:0 0 18px;padding:0;display:flex;flex-direction:column;gap:8px}
+.rt-pl-item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.rt-pl-ico{flex:0 0 auto;display:inline-flex;color:var(--ink-soft)}
+.rt-pl-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.rt-pl-title{font-size:14px;font-weight:700;color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;overflow-wrap:anywhere}
+.rt-pl-title:hover{text-decoration-color:currentColor}
+.rt-pl-host{font-size:11.5px;color:var(--ink-soft);overflow-wrap:anywhere}
+.rt-pl-btns{display:flex;gap:2px;flex:0 0 auto}
+.rt-pl-edit,.rt-pl-del{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+.rt-pl-edit__act,.rt-pl-del__act{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.rt-pl-del{font-size:13.5px;color:var(--ink)}
+.rt-pl-btns .rt-iconbtn{min-width:38px;min-height:38px;display:inline-flex;align-items:center;justify-content:center}
 /* Grilles responsives, frise de la semaine, transitions */
 
 @media(min-width:820px){.rt-shell{max-width:1560px}.rt-body{padding:24px 34px 50px}}
