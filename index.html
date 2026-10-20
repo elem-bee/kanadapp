@@ -45,7 +45,7 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
 .status{color:#cdd7cd;font-size:13px;margin-top:12px}
 .loading{color:#cdd7cd;font-size:13.5px}
 </style>
-<!-- PWA:HEAD --><link rel="manifest" href="manifest.webmanifest"/><meta name="theme-color" content="#1c3a2e"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-title" content="Otrip"/><meta name="apple-mobile-web-app-status-bar-style" content="default"/><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/><!-- /PWA:HEAD -->
+<!-- PWA:HEAD --><link rel="manifest" href="manifest.webmanifest"/><meta name="theme-color" content="#1c3a2e"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-title" content="Otrip"/><meta name="apple-mobile-web-app-status-bar-style" content="default"/><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/><script>window.__rtInstall=null;window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__rtInstall=e;window.dispatchEvent(new CustomEvent("rt-install"));});window.addEventListener("appinstalled",function(){window.__rtInstall=null;window.__rtInstalled=true;window.dispatchEvent(new CustomEvent("rt-install"));});</script><!-- /PWA:HEAD -->
 </head>
 <body>
 <div class="wrap"><div class="card" id="card">
@@ -67,7 +67,7 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
    Inséré tel quel dans chaque page. Définit window.__rtMakeBridge(client) -> {storage, getValue, probe, state}.
    Événements : « rt-net » (état du réseau) et « rt-write-blocked » (écriture refusée faute de réseau). */
 (function(){
-  var DB_NAME="otrip-cache",READ_TIMEOUT=8000,COLD_READ_TIMEOUT=30000,WRITE_TIMEOUT=10000,PROBE_EVERY=15000;   // sans copie locale on attend plus longtemps : mieux vaut un réseau lent qu'une application vide
+  var DB_NAME="otrip-cache",READ_TIMEOUT=8000,COLD_READ_TIMEOUT=30000,WRITE_TIMEOUT=10000,PROBE_EVERY=15000,SYNC_DELAY=1500,SYNC_EVERY=600000;   // sans copie locale on attend plus longtemps : mieux vaut un réseau lent qu'une application vide
   var dbp=null;
   function db(){
     if(dbp)return dbp;
@@ -97,6 +97,7 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
   var idbGet=function(store,key){return idb(store,"readonly",function(s){return s.get(key);});};
   var idbPut=function(store,key,val){return idb(store,"readwrite",function(s){return s.put(val,key);});};
   var idbDel=function(store,key){return idb(store,"readwrite",function(s){return s.delete(key);});};
+  var idbKeys=function(store){return idb(store,"readonly",function(s){return s.getAllKeys();});};
 
   function withTimeout(p,ms){
     return new Promise(function(res,rej){
@@ -115,9 +116,9 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
 
   window.__rtMakeBridge=function(SB){
     var state={offline:false,lastSync:null,reason:"",blocked:0};
-    var probeTimer=null;
-    var ready=idbGet("meta","lastSync").then(function(v){if(typeof v==="number")state.lastSync=v;});
-    function snapshot(){return {offline:state.offline,lastSync:state.lastSync,reason:state.reason,blocked:state.blocked};}
+    var probeTimer=null,syncTimer=null,syncing=false,seen={};   // seen : clés lues ou écrites avec succès pendant cette session
+    var ready=Promise.all([idbGet("meta","lastSync"),idbGet("meta","lastFullSync")]).then(function(v){if(typeof v[0]==="number")state.lastSync=v[0];if(typeof v[1]==="number")state.lastFullSync=v[1];});
+    function snapshot(){return {offline:state.offline,lastSync:state.lastSync,lastFullSync:state.lastFullSync||null,reason:state.reason,blocked:state.blocked};}
     function emit(){try{window.dispatchEvent(new CustomEvent("rt-net",{detail:snapshot()}));}catch(e){}}
     function touchSync(){state.lastSync=Date.now();idbPut("meta","lastSync",state.lastSync);}
     function setOffline(flag,reason){
@@ -126,6 +127,7 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
       if(flag&&!probeTimer)probeTimer=setInterval(probe,PROBE_EVERY);
       if(!flag&&probeTimer){clearInterval(probeTimer);probeTimer=null;}
       if(changed)emit();
+      if(changed&&!flag)scheduleSync();   // la connexion revient : on récupère tout, sans attendre une action de l'utilisateur
     }
     function block(key){state.blocked++;try{window.dispatchEvent(new CustomEvent("rt-write-blocked",{detail:{key:key,blocked:state.blocked}}));}catch(e){}emit();}
     /* Teste la connexion : une lecture minimale. Réussie, elle lève l'état « hors ligne ». */
@@ -136,6 +138,42 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
         if(r&&r.error&&isNetErr(r.error))return false;
         setOffline(false);touchSync();return true;
       },function(){return false;});
+    }
+    /* Synchronisation complète du voyage ouvert : toutes ses clés sont copiées localement, même celles d'une page jamais visitée.
+       Deux requêtes légères (la liste des clés, puis seulement les valeurs pas encore lues pendant cette session) ;
+       ce qui a disparu du serveur est retiré de la copie. Sans effet hors ligne. */
+    function scope(){
+      var t="";try{t=new URLSearchParams(location.search).get("trip")||"";}catch(e){}
+      return t;
+    }
+    async function syncTrip(){
+      if(!SB||syncing||state.offline)return false;
+      if(typeof navigator!=="undefined"&&navigator.onLine===false)return false;
+      syncing=true;
+      try{
+        var trip=scope(),q=SB.from("kv").select("key");
+        q=trip?q.like("key",trip+"::%"):q.not("key","like","%::%");
+        var r=await withTimeout(q,READ_TIMEOUT);
+        if(!r||r.error||!r.data){if(r&&r.error&&isNetErr(r.error))setOffline(true,String(r.error.message||""));return false;}
+        var server=r.data.map(function(x){return x.key;}),onServer={};
+        server.forEach(function(k){onServer[k]=1;});
+        var inScope=function(k){return trip?k.indexOf(trip+"::")===0:k.indexOf("::")<0;};
+        var cached=(await idbKeys("kv"))||[];
+        for(var i=0;i<cached.length;i++){if(inScope(cached[i])&&!onServer[cached[i]])await idbDel("kv",cached[i]);}
+        var missing=server.filter(function(k){return !seen[k];});
+        if(missing.length){
+          var r2=await withTimeout(SB.from("kv").select("key,value").in("key",missing),READ_TIMEOUT);
+          if(!r2||r2.error||!r2.data){if(r2&&r2.error&&isNetErr(r2.error))setOffline(true,String(r2.error.message||""));return false;}
+          for(var j=0;j<r2.data.length;j++){await idbPut("kv",r2.data[j].key,r2.data[j].value);seen[r2.data[j].key]=1;}
+        }
+        state.lastFullSync=Date.now();idbPut("meta","lastFullSync",state.lastFullSync);touchSync();emit();
+        return true;
+      }catch(e){if(isNetErr(e))setOffline(true,String(e&&e.message||e));return false;}
+      finally{syncing=false;}
+    }
+    function scheduleSync(){
+      if(syncTimer||state.offline||!SB)return;
+      syncTimer=setTimeout(function(){syncTimer=null;syncTrip();},SYNC_DELAY);
     }
     /* Valeur brute (déjà décodée) d'une clé, avec repli sur la copie locale. undefined si rien. */
     async function readRaw(key){
@@ -151,7 +189,7 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
         }
         setOffline(false);
         if(!r.data){idbDel("kv",key);return {found:false};}
-        idbPut("kv",key,r.data.value);touchSync();
+        idbPut("kv",key,r.data.value);touchSync();seen[key]=1;scheduleSync();
         return {found:true,value:r.data.value};
       }catch(e){
         setOffline(true,String(e&&e.message||e));
@@ -176,7 +214,7 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
           var v=value;try{v=JSON.parse(value);}catch(e){}
           var r=await withTimeout(SB.from("kv").upsert({key:key,value:v}),WRITE_TIMEOUT);
           if(r.error){if(isNetErr(r.error)){setOffline(true,String(r.error.message||""));block(key);}return null;}
-          idbPut("kv",key,v);touchSync();setOffline(false);
+          idbPut("kv",key,v);touchSync();seen[key]=1;setOffline(false);
           return {key:key,value:value,shared:!!shared};
         }catch(e){
           if(isNetErr(e)){setOffline(true,String(e&&e.message||e));block(key);}
@@ -190,7 +228,7 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
         try{
           var r=await withTimeout(SB.from("kv").delete().eq("key",key),WRITE_TIMEOUT);
           if(r.error){if(isNetErr(r.error)){setOffline(true,String(r.error.message||""));block(key);}return null;}
-          idbDel("kv",key);touchSync();
+          idbDel("kv",key);touchSync();delete seen[key];
           return {key:key,deleted:true,shared:!!shared};
         }catch(e){
           if(isNetErr(e)){setOffline(true,String(e&&e.message||e));block(key);}
@@ -214,7 +252,12 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
       window.addEventListener("offline",function(){setOffline(true,"offline");});
       window.addEventListener("online",function(){probe();});
     }
-    var api={storage:storage,getValue:getValue,probe:probe,state:state,snapshot:snapshot};
+    if(typeof document!=="undefined"){
+      document.addEventListener("visibilitychange",function(){
+        if(document.visibilityState==="visible"&&!state.offline&&(!state.lastFullSync||Date.now()-state.lastFullSync>SYNC_EVERY))scheduleSync();
+      });
+    }
+    var api={storage:storage,getValue:getValue,probe:probe,syncTrip:syncTrip,state:state,snapshot:snapshot};
     window.__rtBridge=api;
     return api;
   };

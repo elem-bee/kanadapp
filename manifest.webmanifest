@@ -7,6 +7,11 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "prefer_related_applications": false,
   "background_color": "#f4f5f2",
   "theme_color": "#1c3a2e",
   "categories": [
