@@ -395,6 +395,13 @@ select.rt-field{appearance:none}
 .rt-rate{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;color:var(--ink)}
 .rt-exp__eur--est{color:var(--ink);font-style:italic}
 .rt-exp__estn{font-weight:500;color:var(--ink-soft);font-size:10.5px}
+.rt-bal__warn--gap{text-align:left;color:var(--maple-deep);background:var(--maple-soft);border:1px solid var(--maple)}
+.rt-gaplist{list-style:none;margin:6px 0 4px;padding:0;display:flex;flex-direction:column;gap:2px}
+.rt-gaplink{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:8px;padding:7px 4px;min-height:40px;font:inherit;font-size:12px;line-height:1.4;color:inherit;cursor:pointer}
+.rt-gaplink:hover,.rt-gaplink:focus-visible{background:rgba(0,0,0,.06)}
+.rt-gaplink__t{font-weight:700}.rt-gaplink__r{opacity:.85}
+.rt-gapmore,.rt-gapnote{font-size:11.5px;margin-top:4px;opacity:.9}
+.rt-exp__gap{display:inline-block;font-size:11px;font-weight:700;color:var(--maple-deep);background:var(--maple-soft);border-radius:6px;padding:1px 5px;margin-left:4px;white-space:nowrap}
 .rt-bal__warn--est{color:var(--ink);background:var(--amber-soft)}
 /* Bloc-notes : playlists musicales */
 .rt-pl{margin-top:26px;padding-top:6px;border-top:1px solid var(--line)}

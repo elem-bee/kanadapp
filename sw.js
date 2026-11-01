@@ -3,7 +3,7 @@
    - la coque de l'application (pages, styles, icônes, bibliothèques épinglées) est mise en cache, par version ;
    - les appels à Supabase ne passent JAMAIS par ce cache : les données sont gérées par le pont de stockage (copie locale + écriture refusée hors ligne) ;
    - une nouvelle version s'installe en arrière-plan et n'est activée que sur demande de l'utilisateur (« Nouvelle version disponible »). */
-const VERSION="9f4d4b1be04b";
+const VERSION="72bcfec20e7d";
 const SHELL_CACHE="otrip-shell-"+VERSION;
 const RUNTIME_CACHE="otrip-runtime";
 const SHELL=["./", "index.html", "roadbook.html", "admin.html", "style.css", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png"];
