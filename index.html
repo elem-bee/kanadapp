@@ -45,7 +45,7 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
 .status{color:#cdd7cd;font-size:13px;margin-top:12px}
 .loading{color:#cdd7cd;font-size:13.5px}
 </style>
-<!-- PWA:HEAD --><link rel="manifest" href="manifest.webmanifest"/><meta name="theme-color" content="#1c3a2e"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-title" content="Otrip"/><meta name="apple-mobile-web-app-status-bar-style" content="default"/><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/><script>window.__rtInstall=null;window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__rtInstall=e;window.dispatchEvent(new CustomEvent("rt-install"));});window.addEventListener("appinstalled",function(){window.__rtInstall=null;window.__rtInstalled=true;window.dispatchEvent(new CustomEvent("rt-install"));});</script><!-- /PWA:HEAD -->
+<!-- PWA:HEAD --><link rel="manifest" href="manifest.webmanifest"/><meta name="theme-color" content="#1c3a2e"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-title" content="Otrip"/><meta name="apple-mobile-web-app-status-bar-style" content="default"/><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/><style>.kbbtn{background:rgba(255,255,255,.14)!important;font-size:13px!important;padding:12px 12px!important;min-width:48px}</style><script>window.__rtInstall=null;window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__rtInstall=e;window.dispatchEvent(new CustomEvent("rt-install"));});window.addEventListener("appinstalled",function(){window.__rtInstall=null;window.__rtInstalled=true;window.dispatchEvent(new CustomEvent("rt-install"));});</script><!-- /PWA:HEAD -->
 </head>
 <body>
 <div class="wrap"><div class="card" id="card">
@@ -301,11 +301,21 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
   }
 
   // Mémorise le rôle validé PAR VOYAGE : roadbook.html le relit et saute la 2e saisie
-  function rememberRole(role, tripId){
+  /*PWA-ROLE*/
+  function rememberRole(role, tripId, hash){
     try{
-      localStorage.setItem("rt_role", role);
       localStorage.setItem("rt_role::" + (tripId || ""), role);
+      if(!tripId) localStorage.setItem("rt_role", role);   // ancienne clé commune : réservée au voyage principal
+      if(hash) localStorage.setItem("rt_rolefp::" + (tripId || ""), String(hash).slice(0, 12));
     }catch(e){}
+  }
+  function kbIsText(){ try{ return localStorage.getItem("rt_lock_kb") === "text"; }catch(e){ return false; } }
+  function toggleKb(){
+    var pw = document.getElementById("pw"), b = document.getElementById("kb"), text = !kbIsText();
+    try{ localStorage.setItem("rt_lock_kb", text ? "text" : "num"); }catch(e){}
+    if(text){ pw.removeAttribute("inputmode"); pw.removeAttribute("pattern"); } else { pw.setAttribute("inputmode", "numeric"); pw.setAttribute("pattern", "[0-9]*"); }
+    if(b){ b.textContent = text ? "123" : "ABC"; b.setAttribute("aria-label", text ? "Clavier numérique" : "Clavier complet (lettres)"); }
+    pw.blur(); pw.focus();
   }
 
   function showStatus(msg){
@@ -342,14 +352,17 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
     picker.innerHTML =
       '<div class="gate"><div class="gatecard">' +
         '<div class="gatename">' + escapeHtml(name) + '</div>' +
-        '<div class="row"><input class="in" type="password" id="pw" placeholder="Mot de passe" autocomplete="off"' +
-          (tile.isAdmin ? '' : ' inputmode="numeric" pattern="[0-9]*"') + '/>' +
+        '<div class="row"><input class="in" type="password" id="pw" placeholder="Mot de passe" autocomplete="off" autocapitalize="off" spellcheck="false"' +
+          (tile.isAdmin || kbIsText() ? '' : ' inputmode="numeric" pattern="[0-9]*"') + '/>' +
+        (tile.isAdmin ? '' : '<button class="btn kbbtn" id="kb" type="button" aria-label="' + (kbIsText() ? 'Clavier numérique' : 'Clavier complet (lettres)') + '">' + (kbIsText() ? '123' : 'ABC') + '</button>') +
         '<button class="btn" id="go">Entrer</button></div>' +
       '</div>' +
       '<button class="back" id="backBtn">← Retour</button></div>';
     document.getElementById("err").textContent = "";
     document.getElementById("pw").focus();
     document.getElementById("backBtn").addEventListener("click", renderPicker);
+    var kbBtn = document.getElementById("kb");
+    if(kbBtn) kbBtn.addEventListener("click", toggleKb);
     document.getElementById("go").addEventListener("click", function(){ tryUnlock(tile); });
     document.getElementById("pw").addEventListener("keydown", function(e){ if(e.key==="Enter") tryUnlock(tile); });
   }
@@ -361,13 +374,17 @@ html,body{margin:0;min-height:100%;background:#050505;font-family:var(--sans)}
     if(!pw) return;
     goBtn.disabled = true; errEl.textContent = "";
     try{
-      var h = await sha256hex(SALT + pw);
+      // espaces autour ignorées (clavier prédictif), puis saisie telle quelle (anciens mots de passe enregistrés avec des espaces)
+      var cands = pw.trim() === pw ? [pw] : (pw.trim() ? [pw.trim(), pw] : [pw]);
+      var hs = [];
+      for(var ci = 0; ci < cands.length; ci++) hs.push(await sha256hex(SALT + cands[ci]));
       if(tile.isAdmin){
-        if(h === GOD_HASH){ rememberRole("admin","__admin__"); await redirectToAdmin(); }
+        if(hs.indexOf(GOD_HASH) >= 0){ rememberRole("admin", "__admin__", GOD_HASH); await redirectToAdmin(); }
         else { errEl.textContent = "Mot de passe incorrect."; }
       } else {
         var hashes = await getAuthHashes(tile.id);
-        if(hashes && (h === hashes.admin || h === hashes.user)){ rememberRole(h === hashes.admin ? "admin" : "user", tile.id); await redirectToRoadbook(tile.id); }
+        var ha = !!hashes && hs.indexOf(hashes.admin) >= 0, hu = !!hashes && hs.indexOf(hashes.user) >= 0;
+        if(ha || hu){ rememberRole(ha ? "admin" : "user", tile.id, ha ? hashes.admin : hashes.user); await redirectToRoadbook(tile.id); }
         else { errEl.textContent = "Mot de passe incorrect."; }
       }
     } catch(e){

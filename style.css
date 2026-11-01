@@ -153,6 +153,10 @@
 .rt-lock__in::placeholder{color:#9fb0a3}.rt-lock__in:focus{outline:2px solid var(--gold)}
 .rt-lock__btn{flex:0 0 auto;border:0;background:var(--maple);color:#fff;font-weight:700;font-family:var(--sans);font-size:15px;padding:12px 18px;border-radius:12px;cursor:pointer}
 .rt-lock__btn:disabled{opacity:.5}.rt-lock__err{color:#f0b8b0;font-size:13px;margin-top:12px;min-height:18px}
+.rt-lock__kb{flex:0 0 auto;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-family:var(--sans);font-size:13px;min-width:48px;border-radius:12px;cursor:pointer}
+.rt-lock__kb[aria-pressed=true]{background:rgba(255,255,255,.22)}
+.rt-lock__notice{margin:2px 0 10px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.12);color:#fff;font-size:13.5px;line-height:1.4}
+.rt-lock__retry{margin-top:6px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:10px;padding:8px 14px;font-family:var(--sans);font-size:13.5px;cursor:pointer}
 /* Entrées du planning, notes, fenêtres modales, champs et boutons */
 .rt-foot{text-align:center;font-size:11.5px;color:var(--ink-soft);padding:8px 18px 26px}
 .rt-topbar__r{display:flex;align-items:center;gap:18px}
@@ -304,11 +308,12 @@ select.rt-field{appearance:none}
 .rt-bal__fam{font-family:var(--serif);font-weight:600;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:7px}
 .rt-bal__sw{display:inline-block;flex:0 0 auto;width:10px;height:10px;border-radius:50%}
 .rt-bal__kv{font-size:12.5px;color:var(--ink-soft);margin-top:3px;white-space:nowrap}
+.rt-bal__loc{display:block;font-size:11.5px;color:var(--ink-soft);line-height:1.3}
 .rt-bal__tot{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:10px}
 .rt-bal__list{display:flex;flex-direction:column;gap:2px}
 .rt-bal__list .rt-bal__main{margin-bottom:6px}
 .rt-bal__rows{margin-top:6px;border-top:1px solid var(--line)}
-.rt-bal__head,.rt-bal__row{display:grid;grid-template-columns:minmax(0,1fr) 74px 74px 84px;gap:6px;align-items:baseline;padding:7px 2px;font-size:12px;color:var(--ink-soft)}
+.rt-bal__head,.rt-bal__row{display:grid;grid-template-columns:minmax(0,1fr) 84px 64px 80px;gap:6px;align-items:baseline;padding:7px 2px;font-size:12px;color:var(--ink-soft)}
 .rt-bal__head{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding-bottom:4px}
 .rt-bal__head span:not(:first-child),.rt-bal__row span:not(.rt-bal__rn){text-align:right;white-space:nowrap}
 .rt-bal__row{border-bottom:1px solid var(--line)}
@@ -388,6 +393,9 @@ select.rt-field{appearance:none}
 .rt-hist{margin-top:6px}
 .rt-hist__max{font-size:11px;color:var(--ink-soft);text-align:right;margin-top:2px}
 .rt-rate{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;color:var(--ink)}
+.rt-exp__eur--est{color:var(--ink);font-style:italic}
+.rt-exp__estn{font-weight:500;color:var(--ink-soft);font-size:10.5px}
+.rt-bal__warn--est{color:var(--ink);background:var(--amber-soft)}
 /* Bloc-notes : playlists musicales */
 .rt-pl{margin-top:26px;padding-top:6px;border-top:1px solid var(--line)}
 .rt-pl__hd{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--ink-soft);margin:14px 0 10px}
@@ -436,6 +444,66 @@ select.rt-field{appearance:none}
 .rt-inst__diag li.is-false .rt-inst__det{color:var(--maple-deep)}
 .rt-inst__fs{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
 .rt-inst__msg{min-height:18px;font-size:13px;color:var(--ink-soft)}
+/* Bloc-notes : albums photo partagés (mêmes règles que les playlists, préfixe rt-al) */
+.rt-al{margin-top:26px;padding-top:6px;border-top:1px solid var(--line)}
+.rt-al__hd{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--ink-soft);margin:14px 0 10px}
+.rt-al-add{display:flex;flex-direction:column;gap:4px;margin:0 0 16px}
+.rt-al-add__btn{margin-top:8px;align-self:flex-start}
+.rt-al-msg{min-height:18px;font-size:12.5px;color:var(--ink-soft);margin-top:6px}
+.rt-al-msg.is-err{color:var(--maple-deep);font-weight:600}
+.rt-al-list{list-style:none;margin:0 0 18px;padding:0;display:flex;flex-direction:column;gap:8px}
+.rt-al-item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.rt-al-ico{flex:0 0 auto;display:inline-flex;color:var(--ink-soft)}
+.rt-al-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.rt-al-title{font-size:14px;font-weight:700;color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;overflow-wrap:anywhere}
+.rt-al-title:hover{text-decoration-color:currentColor}
+.rt-al-host{font-size:11.5px;color:var(--ink-soft);overflow-wrap:anywhere}
+.rt-al-btns{display:flex;gap:2px;flex:0 0 auto}
+.rt-al-edit,.rt-al-del{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+.rt-al-edit__act,.rt-al-del__act{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.rt-al-del{font-size:13.5px;color:var(--ink)}
+.rt-al-btns .rt-iconbtn{min-width:38px;min-height:38px;display:inline-flex;align-items:center;justify-content:center}
+/* Administration : sauvegardes de la base */
+.rt-bk{margin-top:26px;padding-top:6px;border-top:1px solid var(--line)}
+.rt-bk__hd{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--ink-soft);margin:14px 0 10px}
+.rt-bk-intro{font-size:13.5px;line-height:1.45;color:var(--ink);margin:0 0 10px}
+.rt-bk-last{font-size:13px;padding:8px 10px;border-radius:10px;background:var(--pine-soft);color:var(--ink);margin-bottom:12px}
+.rt-bk-last.is-stale{background:var(--amber-soft)}
+.rt-bk-add{display:flex;flex-direction:column;gap:4px;margin:0 0 6px}
+.rt-bk-add__btn{margin-top:8px;align-self:flex-start}
+.rt-bk-msg{min-height:18px;font-size:13px;line-height:1.4;color:var(--ink-soft);margin:6px 0 10px}
+.rt-bk-msg.is-err{color:var(--maple-deep);font-weight:600}
+.rt-bk-msg p{margin:0 0 6px}
+.rt-bk-list{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:8px}
+.rt-bk-item{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.rt-bk-item.is-auto{border-style:dashed}
+.rt-bk-item__txt{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rt-bk-item__t{font-size:14px;font-weight:700;color:var(--ink);overflow-wrap:anywhere}
+.rt-bk-item__m{font-size:12px;color:var(--ink-soft);overflow-wrap:anywhere}
+.rt-bk-tag{display:inline-block;margin-left:7px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);font-size:11px;font-weight:700;color:var(--ink-soft)}
+.rt-bk-item__btns{display:flex;gap:4px;align-items:center;flex:0 0 auto}
+.rt-bk-item__btns .rt-iconbtn{min-width:38px;min-height:38px;display:inline-flex;align-items:center;justify-content:center}
+.rt-bk-b{min-height:38px}
+.rt-bk-del{flex:1;display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--ink)}
+.rt-bk-del__act{display:flex;gap:8px;flex-wrap:wrap}
+.rt-bk-file{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.rt-bk-chk{display:inline-flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--ink);cursor:pointer}
+.rt-bk-chk input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
+.rt-bk-quick{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.rt-bk-grp{border:1px solid var(--line);border-radius:10px;margin:0 0 10px;padding:6px 10px 8px;min-width:0}
+.rt-bk-grp legend{padding:0 6px;font-size:13.5px}
+.rt-bk-items{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.rt-bk-it{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:7px 0;border-top:1px solid var(--line)}
+.rt-bk-it:first-child{border-top:0}
+.rt-bk-it__t{overflow-wrap:anywhere}
+.rt-bk-it__m{display:inline-flex;gap:8px;align-items:center;font-size:12px}
+.rt-bk-st{padding:1px 8px;border-radius:999px;border:1px solid currentColor;font-weight:700;font-size:11.5px}
+.rt-bk-st.is-same{color:var(--ink-soft)}
+.rt-bk-st.is-diff{color:var(--ink)}
+.rt-bk-st.is-missing{color:var(--maple-deep)}
+.rt-bk-sz{color:var(--ink-soft)}
+.rt-bk-warn{flex:1 1 100%;font-size:12px;color:var(--maple-deep);font-weight:600}
+.rt-bk-confirm p{margin:0 0 8px;font-size:14px;line-height:1.45}
 /* Grilles responsives, frise de la semaine, transitions */
 
 @media(min-width:820px){.rt-shell{max-width:1560px}.rt-body{padding:24px 34px 50px}}
